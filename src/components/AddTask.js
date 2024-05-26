@@ -1,22 +1,35 @@
 import { useState } from "react"
 
 const AddTask = () => {
-  return (
+  const [text, setText] = useState('')
+  const [day, setDay] = useState('')
+  const [reminder, setReminder] = useState(false)
 
+  
+  return (
 
     
     <form className="add-from">
         <div className="form-control">
             <label>Task</label>
-            <input type="text" placeholder="Add Task"></input>    
+            <input type="text" placeholder="Add Task"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            ></input>    
         </div>
         <div className="form-control">
             <label>Date</label>
-            <input type="text" placeholder="Date & Time"></input>    
+            <input type="text" placeholder="Date & Time"
+            value={day}
+            onChange={(e) => setDay(e.target.value)}
+            ></input>    
         </div>
         <div className="form-control form-control-check">
             <label>Set Reminder</label>
-            <input type="checkbox"></input>    
+            <input type="checkbox"
+            value={reminder}
+            onChange={(e) => setReminder(e.currentTarget.checked)}
+            ></input>    
         </div>
         
         <input type="submet" value='Save Task' className="btn btn-block"/>      
