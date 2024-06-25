@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Header from "./components/Header";
 import Tasks from "./components/Tasks";
 import AddTask from "./components/AddTask";
@@ -7,37 +7,39 @@ import AddTask from "./components/AddTask";
 
 function App() {
 
+  const [showAddTask, setShowAddTask] = useState(false)
 
-  const [tasks, setTasks] = useState(
-    [
-        {
-            id : 1,
-            text: 'text1',
-            day : 'jan 1',
-            reminder:true,
-    
-        },{
-            id : 2,
-            text: 'text2',
-            day : 'feb 2',
-            reminder:false,
-        },{
-            id : 3,
-            text: 'text3',
-            day : 'mar 3',
-            reminder:true,
-        }
-    ]
-)
+  const [tasks, setTasks] = useState([])
+  
+  useEffect(() => {
+    const getTasks = async () => {
+      const tasksFromServer = await fetchTasks()
+      setTasks(tasksFromServer)
+    }
+    getTasks()
+  }, [])
+
+
+  const fetchTasks = async ()=>{
+    const res = await fetch('http://localhost:5000/tasks')
+    const data = res.json()
+    return data
+  }
 
   // Add task
   const addTask = (task) => {
-    console.log(task)
+    // console.log(task)
+    const id = Math.floor(Math.random()*10000 + 1)
+    console.log(id)
+    const newTask = { id, ...task }
+    setTasks([...tasks, newTask])
   }
 
 
   // delete task
-  const deleteTask = (id) => {
+  const deleteTask = async (id) => {
+    await fetch(`http://localhost:5000/tasks/${id}`, {method:'DELETE'})
+
     setTasks(tasks.filter((task)=> (task.id !== id)))
   }
   // Toggle reminder
@@ -49,8 +51,8 @@ function App() {
 
   return (
     <div className="container">
-      <Header />
-      <AddTask onAdd={addTask} />
+      <Header onAdd={()=> setShowAddTask(!showAddTask)} showAdd={showAddTask} />
+      { showAddTask && <AddTask onAdd={addTask} /> }
       { tasks.length > 0 ? <Tasks tasks={tasks} onDelete={deleteTask} onToggle={toggleReminder}/> : 'Nothing to show yet'}
     </div>
   ); 
